@@ -3,7 +3,8 @@
 
 #include <QObject>
 #include <VLink_Defines.h>
-#include <Pack/VLink_Pack.h>
+#include <VLink_Packs/VLink_Pack.h>
+#include <stdio.h>
 
 class VLink_PackManager : public QObject
 {
@@ -11,17 +12,21 @@ class VLink_PackManager : public QObject
 public:
     explicit VLink_PackManager(QObject *parent = nullptr);
 
-    void setBuffer(const ShrdPtrBuffer &Buffer);
     void StopAnaloop();
     void AddPack(ShrdPtrPack pack);
 
+    void setBufferMutex(const ShrdPtrMutex &BufferMutex);
+
 private:
-    ShrdPtrBuffer m_Buffer;
+//    ShrdPtrBuffer m_Buffer;
     bool m_IsAnalysing;
     QList<ShrdPtrPack> m_Packs;
+    ShrdPtrMutex m_BufferMutex;
+    ShrdPtrBuffer m_Buffer;
 
 public slots:
     void SltPuAnaLoop();
+    void SltPuNewBytes(ShrdPtrByteArray Bytes);
 
 signals:
     void SgNewPack(ShrdPtrPack);

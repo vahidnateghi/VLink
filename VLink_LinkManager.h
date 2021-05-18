@@ -3,10 +3,11 @@
 
 #include <QObject>
 #include <VLink_Defines.h>
-#include <Link/VLink.h>
-#include <LinkInfo/LinkInfo.h>
-#include <LinkInfo/UDP_Info.h>
+#include <VLink_Links/VLink.h>
+#include <VLink_Infos/LinkInfo.h>
+#include <VLink_Infos/UDP_Info.h>
 #include <QThread>
+#include <QMutex>
 
 class VLink_LinkManager : public QObject
 {
@@ -14,21 +15,31 @@ class VLink_LinkManager : public QObject
 public:
     explicit VLink_LinkManager(QObject *parent = nullptr);
 
-    void setBuffer(const ShrdPtrBuffer &Buffer);
-    void AddLink(LinkType type, ShrdPtrInfo Info );
+    int AddLink(LinkType type, ShrdPtrInfo Info );
     void SendBytes( const QByteArray& Bytes );
+    void SendBytes( ShrdPtrByteArray Bytes );
+    void setBufferMutex(const ShrdPtrMutex &BufferMutex);
+    void Start();
+    void Stop();
+    bool IsInitialized();
+
+    ShrdPtrInfo LinkInfo( int LinkID );
 
 private:
-    ShrdPtrBuffer m_Buffer;
     QList<ShrdPtrLink> m_Links;
     QList<QThread*> m_Threads;
+    ShrdPtrMutex m_BufferMutex;
 
 private slots:
     void SltPrNewBytes(ShrdPtrByteArray bytes);
 
 signals:
     void SgSendBytes( const QByteArray& );
-    void SgInit( ShrdPtrInfo );
+    void SgNewBytes(ShrdPtrByteArray);
+    void SgStart();
+    void SgStarted(int ID);
+    void SgStop();
+    void SgStopped(int ID);
 };
 
 #endif // VLINK_LINKMANAGER_H

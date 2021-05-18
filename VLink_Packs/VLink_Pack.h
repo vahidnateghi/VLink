@@ -11,7 +11,7 @@ class VLink_Pack : public QObject
     Q_OBJECT
 public:
     explicit VLink_Pack(QObject *parent = nullptr);
-    virtual AnalyzeResult AnalyzeBytes( std::vector<char>* ) { return AnaRes_UnKnown; }
+    virtual AnalyzeResult AnalyzeBytes( ShrdPtrBuffer ) { return AnaRes_UnKnown; }
     virtual void FillPack( std::vector<char>* ) {}
     virtual VLink_Pack* MakeCopy() { return nullptr; }
     virtual int PackSize() { return 0; }

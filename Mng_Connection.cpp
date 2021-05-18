@@ -14,6 +14,7 @@ int Mng_Connection::AddNewCommunication()
     ShrdPtrComm newComm = ShrdPtrComm(new VLink_Communication());
 
     m_Comms.append( newComm );
+    return newComm.data()->ID();
 }
 
 ShrdPtrComm Mng_Connection::Communication(int ID)

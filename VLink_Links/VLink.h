@@ -2,7 +2,7 @@
 #define VLINK_H
 
 #include <QObject>
-#include "LinkInfo/LinkInfo.h"
+#include "VLink_Infos/LinkInfo.h"
 #include <VLink_Defines.h>
 
 class VLink : public QObject
@@ -11,19 +11,29 @@ class VLink : public QObject
 public:
     explicit VLink(QObject *parent = nullptr);
 
-    virtual void FinLink() = 0;
-    virtual int SendBytes(const QByteArray& Bytes) = 0;
 
     int ID() const;
 
+    ShrdPtrInfo LinkInfo() const;
+
+    void setLinkInfo(const ShrdPtrInfo &LinkInfo);
+
+    bool IsInitialized() const;
+
 public slots:
-    virtual void InitLink( ShrdPtrInfo ) = 0;
+    virtual void InitLink(ShrdPtrInfo info);
+    virtual int SendBytes(const QByteArray& Bytes) = 0;
+    virtual void Start() = 0;
+    virtual void FinLink() = 0;
 
 signals:
     void SgNewInput(ShrdPtrByteArray);
+    void SgStarted();
+    void SgStopped();
 
 protected:
-    ShrdPtrInfo   m_LinkInfo;
+    ShrdPtrInfo     m_LinkInfo;
+    bool m_IsInitialized;
 
 private:
     int         m_ID;

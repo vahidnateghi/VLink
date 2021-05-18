@@ -1,48 +1,121 @@
 #include "VLink_LinkManager.h"
-#include <Link/UDP_VLink.h>
+#include <VLink_Links/UDP_VLink.h>
+#include <VLink_Links/Serial_VLink.h>
+#include <iostream>
 
 VLink_LinkManager::VLink_LinkManager(QObject *parent) : QObject(parent)
 {
 
 }
 
-void VLink_LinkManager::setBuffer(const ShrdPtrBuffer &Buffer)
-{
-    m_Buffer = Buffer;
-}
-
-void VLink_LinkManager::AddLink(LinkType type, ShrdPtrInfo Info)
+int VLink_LinkManager::AddLink(LinkType type, ShrdPtrInfo Info)
 {
     QThread* tThread = new QThread();
-    switch (type) {
-    case Link_UDP:
+    if( type == Link_UDP )
+    {
         ShrdPtrLink newLink = ShrdPtrLink( new UDP_VLink() );
-        connect( this, &VLink_LinkManager::SgSendBytes, [newLink](const QByteArray& Bytes)
-        {
-           newLink.data()->SendBytes( Bytes );
-        });
+        connect( this, &VLink_LinkManager::SgSendBytes, newLink.data(), &VLink::SendBytes );
         connect( newLink.data(), &VLink::SgNewInput, this, &VLink_LinkManager::SltPrNewBytes );
-        connect( this, &VLink_LinkManager::SgInit, newLink.data(), &VLink::InitLink );
+        connect( newLink.data(), &VLink::SgStarted, [this,newLink]()
+        {
+            emit SgStarted( newLink.data()->ID() );
+        });
+        connect( newLink.data(), &VLink::SgStopped, [this,newLink]()
+        {
+            emit SgStopped( newLink.data()->ID() );
+        });
+        connect( this, &VLink_LinkManager::SgStart, newLink.data(), &VLink::Start );
+        connect( this, &VLink_LinkManager::SgStop, newLink.data(), &VLink::FinLink );
+
+        newLink.data()->InitLink( Info );
 
         newLink.data()->moveToThread( tThread );
         tThread->start( QThread::HighestPriority );
         m_Links.append( newLink );
         m_Threads.append( tThread );
-        emit SgInit( Info );
-        break;
+        return newLink.data()->ID();
     }
+    else if( type == Link_Serial )
+    {
+        ShrdPtrLink serLink = ShrdPtrLink( new Serial_VLink() );
+        connect( this, &VLink_LinkManager::SgSendBytes, serLink.data(), &VLink::SendBytes );
+        connect( serLink.data(), &VLink::SgNewInput, this, &VLink_LinkManager::SltPrNewBytes );
+        connect( this, &VLink_LinkManager::SgStart, serLink.data(), &VLink::Start );
+        connect( this, &VLink_LinkManager::SgStop, serLink.data(), &VLink::FinLink );
+        connect( serLink.data(), &VLink::SgStarted, [this,serLink]()
+        {
+            emit SgStarted( serLink.data()->ID() );
+        });
+        connect( serLink.data(), &VLink::SgStopped, [this,serLink]()
+        {
+            emit SgStopped( serLink.data()->ID() );
+        });
+
+        serLink.data()->InitLink( Info );
+
+        serLink.data()->moveToThread( tThread );
+        tThread->start( QThread::HighestPriority );
+        m_Links.append( serLink );
+        m_Threads.append( tThread );
+        return serLink.data()->ID();
+    }
+
+    return -1;
 }
 
 void VLink_LinkManager::SendBytes(const QByteArray &Bytes)
 {
-    emit SgSendBytes( Bytes );
+    Q_FOREACH(ShrdPtrLink link, m_Links)
+    {
+        link.data()->SendBytes( Bytes );
+    }
+}
+
+void VLink_LinkManager::SendBytes(ShrdPtrByteArray Bytes)
+{
+    Q_FOREACH(ShrdPtrLink link, m_Links)
+    {
+        QByteArray tBytes(*Bytes.data());
+        link.data()->SendBytes( tBytes );
+    }
+}
+
+void VLink_LinkManager::setBufferMutex(const ShrdPtrMutex &BufferMutex)
+{
+    m_BufferMutex = BufferMutex;
+}
+
+void VLink_LinkManager::Start()
+{
+    emit SgStart();
+}
+
+void VLink_LinkManager::Stop()
+{
+    emit SgStop();
+}
+
+bool VLink_LinkManager::IsInitialized()
+{
+    bool Init = true;
+    foreach (ShrdPtrLink Link, m_Links) {
+        if( !Link.data()->IsInitialized() )
+            Init = false;
+    }
+
+    return Init;
+}
+
+ShrdPtrInfo VLink_LinkManager::LinkInfo(int LinkID)
+{
+    foreach (ShrdPtrLink Link, m_Links) {
+        if( Link.data()->ID() == LinkID )
+            return Link.data()->LinkInfo();
+
+    }
 }
 
 void VLink_LinkManager::SltPrNewBytes(ShrdPtrByteArray bytes)
 {
-    if( m_Buffer.data() == NULL )
-        return;
-
-
-    m_Buffer.data()->insert( m_Buffer.data()->end(), bytes.data()->begin(), bytes.data()->end() );
+    emit SgNewBytes( bytes );
 }

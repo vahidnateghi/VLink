@@ -1,32 +1,36 @@
-Qt += network
+Qt += network serialport
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
 HEADERS += \
-    $$PWD/Link/VLink.h \
-    $$PWD/Pack/VLink_Pack.h \
+    $$PWD/VLink_Links/VLink.h \
+    $$PWD/Vlink_Packs/VLink_Pack.h \
     $$PWD/VLink_Defines.h \
     $$PWD/Mng_Connection.h \
-    $$PWD/LinkInfo/LinkInfo.h \
-    $$PWD/LinkInfo/TCPClient_Info.h \
-    $$PWD/LinkInfo/TCPServer_Info.h \
-    $$PWD/LinkInfo/UDP_Info.h \
-    $$PWD/Link/UDP_VLink.h \
+    $$PWD/VLink_Infos/LinkInfo.h \
+    $$PWD/VLink_Infos/TCPClient_Info.h \
+    $$PWD/VLink_Infos/TCPServer_Info.h \
+    $$PWD/VLink_Infos/UDP_Info.h \
+    $$PWD/VLink_Links/UDP_VLink.h \
     $$PWD/VLink_Communication.h \
     $$PWD/VLink_LinkManager.h \
-    $$PWD/VLink_PackManager.h
+    $$PWD/VLink_PackManager.h \
+    $$PWD/VLink_Links/Serial_VLink.h \
+    $$PWD/VLink_Infos/Serial_Info.h
 
 SOURCES += \
-    $$PWD/Link/VLink.cpp \
-    $$PWD/Pack/VLink_Pack.cpp \
+    $$PWD/VLink_Links/VLink.cpp \
+    $$PWD/Vlink_Packs/VLink_Pack.cpp \
     $$PWD/Mng_Connection.cpp \
-    $$PWD/LinkInfo/LinkInfo.cpp \
-    $$PWD/LinkInfo/TCPClient_Info.cpp \
-    $$PWD/LinkInfo/TCPServer_Info.cpp \
-    $$PWD/LinkInfo/UDP_Info.cpp \
-    $$PWD/Link/UDP_VLink.cpp \
+    $$PWD/VLink_Infos/LinkInfo.cpp \
+    $$PWD/VLink_Infos/TCPClient_Info.cpp \
+    $$PWD/VLink_Infos/TCPServer_Info.cpp \
+    $$PWD/VLink_Infos/UDP_Info.cpp \
+    $$PWD/VLink_Links/UDP_VLink.cpp \
     $$PWD/VLink_Communication.cpp \
     $$PWD/VLink_LinkManager.cpp \
-    $$PWD/VLink_PackManager.cpp
+    $$PWD/VLink_PackManager.cpp \
+    $$PWD/VLink_Links/Serial_VLink.cpp \
+    $$PWD/VLink_Infos/Serial_Info.cpp
 
