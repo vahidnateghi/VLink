@@ -18,7 +18,7 @@ VLink_Communication::VLink_Communication(QObject *parent) : QObject(parent)
     m_PackMngrThread->start( QThread::HighestPriority );
 
     connect( this, &VLink_Communication::SgStart, &m_PackManager, &VLink_PackManager::SltPuAnaLoop );
-    connect( &m_LinkManager, &VLink_LinkManager::SgNewBytes, &m_PackManager, &VLink_PackManager::SltPuNewBytes );
+    connect( &m_LinkManager, &VLink_LinkManager::SgNewBytes, &m_PackManager, &VLink_PackManager::SltPuNewBytes, Qt::DirectConnection );
     connect( &m_LinkManager, &VLink_LinkManager::SgNewBytes, [this](ShrdPtrByteArray Bytes)
     {
         if( m_SendNewBytesSignal )

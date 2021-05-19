@@ -15,7 +15,7 @@ int VLink_LinkManager::AddLink(LinkType type, ShrdPtrInfo Info)
     {
         ShrdPtrLink newLink = ShrdPtrLink( new UDP_VLink() );
         connect( this, &VLink_LinkManager::SgSendBytes, newLink.data(), &VLink::SendBytes );
-        connect( newLink.data(), &VLink::SgNewInput, this, &VLink_LinkManager::SltPrNewBytes );
+        connect( newLink.data(), &VLink::SgNewInput, this, &VLink_LinkManager::SltPrNewBytes, Qt::DirectConnection );
         connect( newLink.data(), &VLink::SgStarted, [this,newLink]()
         {
             emit SgStarted( newLink.data()->ID() );
@@ -39,7 +39,7 @@ int VLink_LinkManager::AddLink(LinkType type, ShrdPtrInfo Info)
     {
         ShrdPtrLink serLink = ShrdPtrLink( new Serial_VLink() );
         connect( this, &VLink_LinkManager::SgSendBytes, serLink.data(), &VLink::SendBytes );
-        connect( serLink.data(), &VLink::SgNewInput, this, &VLink_LinkManager::SltPrNewBytes );
+        connect( serLink.data(), &VLink::SgNewInput, this, &VLink_LinkManager::SltPrNewBytes, Qt::DirectConnection );
         connect( this, &VLink_LinkManager::SgStart, serLink.data(), &VLink::Start );
         connect( this, &VLink_LinkManager::SgStop, serLink.data(), &VLink::FinLink );
         connect( serLink.data(), &VLink::SgStarted, [this,serLink]()
