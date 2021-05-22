@@ -5,7 +5,7 @@ DEPENDPATH += $$PWD
 
 HEADERS += \
     $$PWD/VLink_Links/VLink.h \
-    $$PWD/Vlink_Packs/VLink_Pack.h \
+    $$PWD/VLink_Packs/VLink_Pack.h \
     $$PWD/VLink_Defines.h \
     $$PWD/Mng_Connection.h \
     $$PWD/VLink_Infos/LinkInfo.h \
@@ -21,7 +21,7 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/VLink_Links/VLink.cpp \
-    $$PWD/Vlink_Packs/VLink_Pack.cpp \
+    $$PWD/VLink_Packs/VLink_Pack.cpp \
     $$PWD/Mng_Connection.cpp \
     $$PWD/VLink_Infos/LinkInfo.cpp \
     $$PWD/VLink_Infos/TCPClient_Info.cpp \
