@@ -8,6 +8,9 @@ UDP_VLink::UDP_VLink(QObject *parent) : VLink(parent)
     m_IsReading = false;
 
     m_Socket = new QUdpSocket( this );
+    m_Socket->setSocketOption(QAbstractSocket::ReceiveBufferSizeSocketOption, 0x7FFFFFFF);
+    m_Socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+    m_Socket->setReadBufferSize( 0x7FFFFFFF );
 
     connect( m_Socket, &QUdpSocket::readyRead, [this]()
     {
@@ -40,7 +43,7 @@ void UDP_VLink::Start()
     UDP_Info* tInfo = (UDP_Info*)m_LinkInfo.data();
 
 
-    if( !m_Socket->bind( tInfo->m_RxPort ) )
+    if( !m_Socket->bind( QHostAddress::Any, tInfo->m_RxPort ) )
     {
         std::cout << "UDP Socket not bound!" << std::endl;
         return;

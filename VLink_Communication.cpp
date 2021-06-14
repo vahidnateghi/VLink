@@ -1,4 +1,5 @@
 #include "VLink_Communication.h"
+#include <QFile>
 
 int VLink_Communication::m_IdCounter = 0;
 
@@ -49,6 +50,13 @@ int VLink_Communication::AddLink(LinkType Type, ShrdPtrInfo Info)
 void VLink_Communication::SendPack(VLink_Pack &pack)
 {
     QByteArray sArray = pack.GetBytes();
+//    QString outStr = "";
+//    for( int i = 0; i < sArray.size(); i++ ) outStr += ( QString( QByteArray(1, sArray.at(i)).toHex() ) + tr(" ") );
+//    outStr = outStr.remove( outStr.length() - 2, 1 );
+//    QFile file("outPack.txt");
+//    file.open( QIODevice::WriteOnly);
+//    file.write( outStr.toUtf8() );
+//    file.close();
     m_LinkManager.SendBytes( sArray );
 }
 
