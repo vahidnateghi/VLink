@@ -24,6 +24,7 @@ public:
     bool IsInitialized();
 
     ShrdPtrInfo LinkInfo( int LinkID );
+    ShrdPtrLink Link( int LinkID );
 
 private:
     QList<ShrdPtrLink> m_Links;

@@ -4,7 +4,6 @@
 #include "VLink.h"
 #include "VLink_Infos/UDP_Info.h"
 #include <QUdpSocket>
-#include <QElapsedTimer>
 
 class UDP_VLink : public VLink
 {
@@ -21,8 +20,6 @@ public slots:
 private:
     QUdpSocket* m_Socket;
     bool m_IsReading;
-
-    QElapsedTimer m_StopWatch;
 
 };
 

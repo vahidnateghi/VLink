@@ -39,7 +39,7 @@ int VLink_LinkManager::AddLink(LinkType type, ShrdPtrInfo Info)
     {
         ShrdPtrLink serLink = ShrdPtrLink( new Serial_VLink() );
         connect( this, &VLink_LinkManager::SgSendBytes, serLink.data(), &VLink::SendBytes );
-        connect( serLink.data(), &VLink::SgNewInput, this, &VLink_LinkManager::SltPrNewBytes );
+        connect( serLink.data(), &VLink::SgNewInput, this, &VLink_LinkManager::SltPrNewBytes, Qt::DirectConnection );
         connect( this, &VLink_LinkManager::SgStart, serLink.data(), &VLink::Start );
         connect( this, &VLink_LinkManager::SgStop, serLink.data(), &VLink::FinLink );
         connect( serLink.data(), &VLink::SgStarted, [this,serLink]()
@@ -112,6 +112,14 @@ ShrdPtrInfo VLink_LinkManager::LinkInfo(int LinkID)
         if( Link.data()->ID() == LinkID )
             return Link.data()->LinkInfo();
 
+    }
+}
+
+ShrdPtrLink VLink_LinkManager::Link(int LinkID)
+{
+    foreach (ShrdPtrLink Link, m_Links) {
+        if( Link.data()->ID() == LinkID )
+            return Link;
     }
 }
 

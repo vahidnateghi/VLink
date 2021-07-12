@@ -1,7 +1,6 @@
 #include "UDP_VLink.h"
 #include <QSharedPointer>
 #include <iostream>
-#include <QDebug>
 
 UDP_VLink::UDP_VLink(QObject *parent) : VLink(parent)
 {
@@ -9,23 +8,16 @@ UDP_VLink::UDP_VLink(QObject *parent) : VLink(parent)
     m_IsReading = false;
 
     m_Socket = new QUdpSocket( this );
-    m_Socket->setSocketOption( QAbstractSocket::KeepAliveOption, 1 );
+    m_Socket->setSocketOption(QAbstractSocket::ReceiveBufferSizeSocketOption, 0x7FFFFFFF);
+    m_Socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+    m_Socket->setReadBufferSize( 0x7FFFFFFF );
 
     connect( m_Socket, &QUdpSocket::readyRead, [this]()
     {
-//        std::cout << "===========" << std::endl;
-//        if( m_StopWatch.isValid() )
-//            m_StopWatch.restart();
-//        else
-//            m_StopWatch.start();
-
         int rsize = m_Socket->pendingDatagramSize();
         ShrdPtrByteArray rBytes = ShrdPtrByteArray( new QByteArray() );
         rBytes.data()->resize( rsize );
         m_Socket->readDatagram( rBytes.data()->data(), rsize );
-
-//        std::cout << "Read Datagram Time: " << m_StopWatch.nsecsElapsed() << std::endl;
-//        m_StopWatch.restart();
 
         emit SgNewInput( rBytes );
     } );
@@ -36,16 +28,10 @@ int UDP_VLink::SendBytes(const QByteArray &Bytes)
     if( !m_IsInitialized )
         return 0;
 
-//    qint64 purProcessTime = m_StopWatch.nsecsElapsed();
-//    m_StopWatch.restart();
-
     UDP_Info* tInfo = (UDP_Info*)m_LinkInfo.data() ;
 
     int ssize = m_Socket->writeDatagram( Bytes, QHostAddress( tInfo->m_PeerIP ), tInfo->m_TxPort );
     m_Socket->flush();
-//    std::cout << "Pure Process Time : " << purProcessTime << std::endl;
-//    std::cout << "UDP Send Time : " << m_StopWatch.nsecsElapsed() << std::endl;
-//    qDebug() << "Sent " << ssize << " Bytes!";
     return ssize;
 }
 
@@ -57,7 +43,7 @@ void UDP_VLink::Start()
     UDP_Info* tInfo = (UDP_Info*)m_LinkInfo.data();
 
 
-    if( !m_Socket->bind( tInfo->m_RxPort ) )
+    if( !m_Socket->bind( QHostAddress::Any, tInfo->m_RxPort ) )
     {
         std::cout << "UDP Socket not bound!" << std::endl;
         return;

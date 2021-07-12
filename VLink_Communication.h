@@ -31,6 +31,7 @@ public:
     void Stop();
     bool IsInitialized();
     ShrdPtrInfo LinkInfo( int LinkID );
+    ShrdPtrLink Link( int LinkId );
 
 private:
     static int m_IdCounter;
