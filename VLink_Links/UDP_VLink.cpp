@@ -64,7 +64,7 @@ void UDP_VLink::FinLink()
 
     m_IsReading = false;
     m_IsInitialized = false;
-    if( m_Socket->BoundState )
+    if( m_Socket->state() == QUdpSocket::BoundState )
         m_Socket->close();
 
     emit SgStopped();
