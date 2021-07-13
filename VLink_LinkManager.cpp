@@ -113,6 +113,8 @@ ShrdPtrInfo VLink_LinkManager::LinkInfo(int LinkID)
             return Link.data()->LinkInfo();
 
     }
+
+    return ShrdPtrInfo();
 }
 
 ShrdPtrLink VLink_LinkManager::Link(int LinkID)
@@ -121,6 +123,8 @@ ShrdPtrLink VLink_LinkManager::Link(int LinkID)
         if( Link.data()->ID() == LinkID )
             return Link;
     }
+
+    return ShrdPtrLink();
 }
 
 void VLink_LinkManager::SltPrNewBytes(ShrdPtrByteArray bytes)
