@@ -32,10 +32,8 @@ int Serial_VLink::SendBytes(const QByteArray &Bytes)
     if( !m_IsInitialized )
         return 0;
 
-    int ssize = m_Port->write( Bytes );
+    m_Port->write( Bytes );
     m_Port->flush();
-
-    return ssize;
 }
 
 void Serial_VLink::Start()

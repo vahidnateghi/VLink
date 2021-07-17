@@ -1,6 +1,7 @@
 #include "VLink_LinkManager.h"
 #include <VLink_Links/UDP_VLink.h>
 #include <VLink_Links/Serial_VLink.h>
+#include <VLink_Links/UDPRaw_VLink.h>
 #include <iostream>
 
 VLink_LinkManager::VLink_LinkManager(QObject *parent) : QObject(parent)
@@ -14,6 +15,30 @@ int VLink_LinkManager::AddLink(LinkType type, ShrdPtrInfo Info)
     if( type == Link_UDP )
     {
         ShrdPtrLink newLink = ShrdPtrLink( new UDP_VLink() );
+        connect( this, &VLink_LinkManager::SgSendBytes, newLink.data(), &VLink::SendBytes );
+        connect( newLink.data(), &VLink::SgNewInput, this, &VLink_LinkManager::SltPrNewBytes, Qt::DirectConnection );
+        connect( newLink.data(), &VLink::SgStarted, [this,newLink]()
+        {
+            emit SgStarted( newLink.data()->ID() );
+        });
+        connect( newLink.data(), &VLink::SgStopped, [this,newLink]()
+        {
+            emit SgStopped( newLink.data()->ID() );
+        });
+        connect( this, &VLink_LinkManager::SgStart, newLink.data(), &VLink::Start );
+        connect( this, &VLink_LinkManager::SgStop, newLink.data(), &VLink::FinLink );
+
+        newLink.data()->InitLink( Info );
+
+        newLink.data()->moveToThread( tThread );
+        tThread->start( QThread::HighestPriority );
+        m_Links.append( newLink );
+        m_Threads.append( tThread );
+        return newLink.data()->ID();
+    }
+    else if( type == Link_UDPRaw )
+    {
+        ShrdPtrLink newLink = ShrdPtrLink( new UDPRaw_VLink() );
         connect( this, &VLink_LinkManager::SgSendBytes, newLink.data(), &VLink::SendBytes );
         connect( newLink.data(), &VLink::SgNewInput, this, &VLink_LinkManager::SltPrNewBytes, Qt::DirectConnection );
         connect( newLink.data(), &VLink::SgStarted, [this,newLink]()
@@ -113,8 +138,6 @@ ShrdPtrInfo VLink_LinkManager::LinkInfo(int LinkID)
             return Link.data()->LinkInfo();
 
     }
-
-    return ShrdPtrInfo();
 }
 
 ShrdPtrLink VLink_LinkManager::Link(int LinkID)
@@ -123,8 +146,6 @@ ShrdPtrLink VLink_LinkManager::Link(int LinkID)
         if( Link.data()->ID() == LinkID )
             return Link;
     }
-
-    return ShrdPtrLink();
 }
 
 void VLink_LinkManager::SltPrNewBytes(ShrdPtrByteArray bytes)

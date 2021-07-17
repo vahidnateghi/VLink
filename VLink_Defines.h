@@ -24,6 +24,7 @@ enum AnalyzeResult
 enum LinkType
 {
     Link_UDP,
+    Link_UDPRaw,
     Link_Serial
 };
 

@@ -75,6 +75,10 @@ void VLink_PackManager::SltPuNewBytes(ShrdPtrByteArray Bytes)
 
                 emit SgNewPack( NewPack );
             }
+            else if( tRes == AnaRes_TooShort )
+            {
+                Res = tRes;
+            }
         }
 
         if( Res == AnaRes_Error  && m_Buffer.data()->size() > 0 )

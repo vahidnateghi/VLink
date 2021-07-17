@@ -1,9 +1,10 @@
-Qt += network serialport
+Qt += network serialport concurrent
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
 HEADERS += \
+    $$PWD/VLink_Links/UDPRaw_VLink.h \
     $$PWD/VLink_Links/VLink.h \
     $$PWD/VLink_Packs/VLink_Pack.h \
     $$PWD/VLink_Defines.h \
@@ -20,6 +21,7 @@ HEADERS += \
     $$PWD/VLink_Infos/Serial_Info.h
 
 SOURCES += \
+    $$PWD/VLink_Links/UDPRaw_VLink.cpp \
     $$PWD/VLink_Links/VLink.cpp \
     $$PWD/VLink_Packs/VLink_Pack.cpp \
     $$PWD/Mng_Connection.cpp \
